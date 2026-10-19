@@ -9,7 +9,7 @@
 )
 
 #set text(
-  font: "STIX Two Text",
+  font: "Libertinus Serif",
   size: 12pt,
 )
 
