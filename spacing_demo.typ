@@ -13,7 +13,7 @@
   size: 12pt,
 )
 
-#show: doc => set-space(doc, spread: 1.5)
+#show: doc => set-space(doc, spread: 1.5, lists: "grouped")
 #show: doc => elegant-style(doc)
 
 = A Dummy Section
@@ -26,3 +26,8 @@ In parallel with technological advances, the natural world continues to demonstr
 == Some Subsection within Another Dummy Section
 
 Ultimately, progress depends on fostering meaningful synthesis between human ingenuity and sustainable stewardship. True advancement requires not only technological innovation, but also ethical reflection on how these tools are deployed within society. When individuals and institutions prioritize empathy, critical thinking, and long-term sustainability, they lay the foundation for resilient communities capable of navigating future challenges. Balancing economic ambition with ecological responsibility and social well-being remains the key to building a prosperous, equitable future for generations to come.
+
+Lists and enums also get spacing between preceding text and their start.
++ This is the first item. It contains a lot of text, so it should move on to the second line. And then we can start a second point.
++ This is the second item, which only serves the purpose of being the indicator of the spacing produced between the previous item and this one.
+The digital age has fundamentally transformed how human beings communicate, learn, and build communities across the globe.
