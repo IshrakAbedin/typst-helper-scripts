@@ -100,10 +100,29 @@
 /// ```
 ///
 /// - doc (content): A content block/whole document body to parse
-#let elegant-style(doc) = {
-  set par(justify: true)
-  set heading(numbering: "1.1.1   ")
-  set page(numbering: "1")
-  set enum(numbering: "1.a.i.")
+/// Set a reasonable minimal styling to the document with
+/// justification, different numbering with spacing afterwards,
+/// when required and simple page numbering in the bottom-middle
+/// of the page.
+///
+/// After import, use as:
+/// ```
+/// #import "spacing.typ": elegant-style
+/// // ...
+/// #show: doc => elegant-style(doc)
+/// ```
+///
+/// - doc (content): A content block/whole document body to parse
+#let elegant-style(
+  doc,
+  par-justify: true,
+  heading-numbering: "1.1.1   ",
+  page-numbering: "1",
+  enum-numbering: "1.a.i.",
+) = {
+  set par(justify: par-justify)
+  set heading(numbering: heading-numbering)
+  set page(numbering: page-numbering)
+  set enum(numbering: enum-numbering)
   doc
 }
