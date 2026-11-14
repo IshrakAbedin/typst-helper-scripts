@@ -20,7 +20,7 @@
 #show raw: set text(font: "DejaVu Sans Mono", size: 10pt)
 
 = Single Blocks
-The simplest call takes a raw block and shows the language label in the top right corner, with nothing else added.
+The simplest call takes a raw block and shows the language in the top right corner, as an icon when one is available, with nothing else added.
 
 #lilcode(```python
 def greet(name):
@@ -42,7 +42,7 @@ Line numbers, highlighting, and a caption are optional. Highlighted lines are gi
   caption: [Summing a vector.],
 ) <lst:sum>
 
-The first line number can be changed, which is handy for excerpts, and the label can be replaced or hidden altogether. A plain string works as well, in which case the `lang` option also picks the syntax highlighting.
+The first line number can be changed, which is handy for excerpts, and the label can be replaced or hidden altogether. A custom label such as "C99" has no icon, so it is shown as text. A plain string works as well, in which case the `lang` option also picks the syntax highlighting.
 
 #lilcode(
   ```c
@@ -55,6 +55,46 @@ The first line number can be changed, which is handy for excerpts, and the label
 )
 
 #lilcode("echo hello", lang: none)
+
+= Language Icons
+Icons are the default. They are looked up from the language of the raw block, and common aliases work too, so `py`, `rs`, `sh`, `yml`, and many other tags all find their icon.
+
+#lilcode(```py
+print("py is an alias of python")
+```)
+
+#lilcode(```sh
+echo "sh and bash share the shell icon"
+```)
+
+Languages without an icon fall back to the usual text label, so nothing breaks when an unusual one comes along.
+
+#lilcode(```brainfuck
+++++++++[>++++++++<-]>+.
+```)
+
+To get the text label instead, pass `icons: false` to a single block. The icon follows `lang-color`, and its height is set by `icon-size`.
+
+#lilcode(
+  ```rust
+  fn main() { println!("text label"); }
+  ```,
+  icons: false,
+)
+
+#lilcode(
+  ```rust
+  fn main() { println!("bigger, colored icon"); }
+  ```,
+  lang-color: rgb("#b7410e"),
+  icon-size: 1.8em,
+)
+
+An explicit `lang` string is looked up as well, so `lang: "python"` gives the icon on a plain string, while content such as `[Python 3]` is always shown as written.
+
+#lilcode("x = 1", lang: "python")
+
+#lilcode("x = 1", lang: [Python 3])
 
 = Whole Document
 == Global Mode
@@ -74,6 +114,16 @@ Calling `lilcode-init` on the document body styles every block-level raw element
     name = "demo"
     ```,
   )
+]
+
+The same call turns the icons off for the whole scope, which is the global switch. Local options still apply to blocks that call `lilcode` directly, since those do not inherit what is given here.
+
+#[
+  #show: doc => lilcode-init(doc, icons: false)
+
+  ```js
+  console.log("text label, set once for the scope");
+  ```
 ]
 
 #pagebreak()

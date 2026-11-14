@@ -9,8 +9,19 @@
   Font, size, and line spacing are inherited from the surrounding
   document (your own `show raw: set text(...)` and `set par(leading:
   ...)` rules apply), so the block looks like a regular raw block
-  with a frame around it. Requires Typst 0.11 or newer.
+  with a frame around it.
+
+  The language label is shown as a small icon whenever one is
+  available (see lang-icons.typ, which must sit next to this file),
+  and as plain text otherwise. Icons can be turned off per block with
+  `icons: false`, or for a whole document with
+  `lilcode-init(doc, icons: false)`.
+
+  Requires Typst 0.13 or newer for icons (0.11 is enough when they
+  are always disabled).
 */
+
+#import "lang-icons.typ": has-icon, lang-icon
 
 
 /// Format a single code block.
@@ -34,10 +45,16 @@
 /// after attaching a label as above.
 ///
 /// - body (raw, str): A block-level raw element, or a plain string.
-/// - lang (auto, none, str): The language label shown in the top right
-///   corner. `auto` uses the language of the raw block, `none` hides
-///   the label, and a string sets a custom label. For a string `body`,
-///   the string is also used as the syntax highlighting language.
+/// - lang (auto, none, str, content): The language label shown in the
+///   top right corner. `auto` uses the language of the raw block,
+///   `none` hides the label, a string sets a custom label, and content
+///   is shown as is. For a string `body`, a string `lang` is also used
+///   as the syntax highlighting language.
+/// - icons (bool): Whether to show the language as an icon instead of
+///   text. Only strings that have an icon (including common aliases
+///   such as `py` or `c++`) are affected; anything else, like a custom
+///   label or an unknown language, is shown as text. Content labels
+///   are never replaced.
 /// - caption (none, content, str): A figure caption. `none` gives a
 ///   bare block with no figure around it.
 /// - numbers (bool): Whether to show line numbers.
@@ -53,12 +70,15 @@
 ///   document, e.g. from `show raw: set text(font: ...)`.
 /// - size (auto, length): Code size. `auto` inherits it as above.
 /// - number-color (color): Color of the line numbers.
-/// - lang-color (color): Color of the language label.
+/// - lang-color (color): Color of the language label or icon.
+/// - icon-size (length): Height of the language icon. As an `em`
+///   length it is relative to the code font size.
 /// - highlight-fill (color): Background of highlighted lines.
 /// - breakable (bool): Whether the block may split across pages.
 #let lilcode(
   body,
   lang: auto,
+  icons: true,
   caption: none,
   numbers: false,
   start: 1,
@@ -71,6 +91,7 @@
   size: auto,
   number-color: luma(150),
   lang-color: luma(120),
+  icon-size: 1.1em,
   highlight-fill: rgb("#fff4c2"),
   breakable: true,
 ) = {
@@ -87,6 +108,15 @@
 
   // Language label.
   let label = if lang == none { none } else if lang == auto { raw-body.lang } else { lang }
+
+  // An icon where enabled and available, the text otherwise.
+  let label-view = if label == none {
+    none
+  } else if icons and type(label) == str and has-icon(label) {
+    lang-icon(label, height: icon-size, color: lang-color)
+  } else {
+    text(size: 0.8em, fill: lang-color, label)
+  }
 
   // Normalise highlight specs into a flat list of line numbers.
   let marked = ()
@@ -135,8 +165,8 @@
         if font != auto { overrides.font = font }
         if size != auto { overrides.size = size }
         set text(hyphenate: false, ..overrides)
-        if label != none {
-          place(top + right, dx: -0.6em, dy: 0.45em, text(size: 0.8em, fill: lang-color, label))
+        if label-view != none {
+          place(top + right, dx: -0.6em, dy: 0.45em, label-view)
         }
         grid(columns: if numbers { (auto, 1fr) } else { (1fr,) }, ..cells)
       },
@@ -161,6 +191,8 @@
 /// #import "lilcode.typ": lilcode-init
 /// // ...
 /// #show: doc => lilcode-init(doc, numbers: true)
+/// // or, with text labels instead of icons everywhere:
+/// #show: doc => lilcode-init(doc, icons: false)
 /// ```
 ///
 /// Plain figures such as are styled as well. The options given here
@@ -171,7 +203,7 @@
 /// - caption-pos (alignment): Where figure captions of code go, `top`
 ///   or `bottom`.
 /// - ..options: Any named option of `lilcode`, e.g. `numbers: true`,
-///   `fill: luma(240)`. The per-block ones (`caption`, `start`,
+///   `icons: false`, `fill: luma(240)`. The per-block ones (`caption`, `start`,
 ///   `highlight`) make little sense globally.
 #let lilcode-init(body, caption-pos: top, ..options) = {
   show figure.where(kind: raw): set block(breakable: true)
